@@ -33,7 +33,7 @@ export async function register(username, password) {
 export async function login(username, password) {
     beginRequest();
 
-    const result = (await fetch(host(endpoints.LOGIN), {
+    const result = await (await fetch(host(endpoints.LOGIN), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -42,12 +42,13 @@ export async function login(username, password) {
             login: username,
             password
         })
-    })).json()
+    })).json();
     localStorage.setItem('userToken', result['user-token']);
     localStorage.setItem('username', result.username);
-    localStorage.setItem('userId', result.ObjectId);
+    localStorage.setItem('userId', result.objectId);
 
     endRequest();
+    console.log(await result.username);
 
     return result;
 }
@@ -73,7 +74,7 @@ export async function logout() {
 
 // get all Movies
 
-async function getMovies() {
+export async function getMovies() {
     beginRequest();
 
     const token = localStorage.getItem('userToken');
@@ -90,7 +91,7 @@ async function getMovies() {
 }
 // get movie by ID
 
-async function getMovieById(id) {
+export async function getMovieById(id) {
     beginRequest();
 
     const token = localStorage.getItem('userToken');
@@ -109,10 +110,9 @@ async function getMovieById(id) {
 
 // create movie
 
-async function createMovie(movie) {
-    beginRequest();
-
+export async function createMovie(movie) {
     const token = localStorage.getItem('userToken');
+    beginRequest();
 
     const result = (await fetch(host(endpoints.MOVIES), {
         method: 'POST',
@@ -171,10 +171,12 @@ async function deleteMovie(id) {
 
 // get movies by userID
 
-async function getMoviesByOwner(ownerId) {
+export async function getMoviesByOwner() {
     beginRequest();
 
     const token = localStorage.getItem('userToken');
+
+    const ownerId = localStorage.getItem('userId')
 
     const result = (await fetch(host(endpoints.MOVIES + `?where=ownerId%3D%27${ownerId}%27`), {
         headers: {
@@ -189,7 +191,7 @@ async function getMoviesByOwner(ownerId) {
 
 // but ticket
 
-async function buyTickets(movie) {
+export async function buyTickets(movie) {
     const newTicket = movie.tickets - 1;
     const movieId = movie.objectId;
 

@@ -11,22 +11,19 @@ export default async function register() {
 }
 
 export async function registerPost() {
-    if (this.params.password !== this.params.repeatPassword) {
-        alert(`Passwords do NOT match`);
-        return
-    }
-
-    if (this.params.username.length < 3) {
-        alert('Username too short');
-        return
-    }
-
-    if (this.params.password.length < 6) {
-        alert('Password too short');
-        return
-    }
-
     try {
+        if (this.params.password !== this.params.repeatPassword) {
+            throw new Error(`Passwords do NOT match`);
+        }
+
+        if (this.params.username.length < 3) {
+            throw new Error('Username too short');
+        }
+
+        if (this.params.password.length < 6) {
+            throw new Error('Password too short');
+        }
+
         const result = registerUser(this.params.username, this.params.password);
         if (result.hasOwnProperty('errorData')) {
             const error = new Error();
