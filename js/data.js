@@ -130,7 +130,7 @@ export async function createMovie(movie) {
 
 // edit movie
 
-async function updateMovie(id, updatedProp) {
+export async function updateMovie(id, updatedProp) {
     beginRequest();
 
     const token = localStorage.getItem('userToken');
