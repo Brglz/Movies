@@ -1,5 +1,5 @@
 import { showInfo, showError } from './notifications.js';
-import { createMovie, getMovies, buyTickets, getMoviesByOwner, getMovieById, updateMovie } from '../data.js';
+import { createMovie, getMovies, buyTickets, getMoviesByOwner, getMovieById, updateMovie, deleteMovie as apiDelete } from '../data.js';
 
 export default async function catalog() {
     this.partials = {
@@ -8,9 +8,11 @@ export default async function catalog() {
         movie: await this.load('./templates/movie/movie.hbs')
     };
 
-    const movies = await getMovies();
+    const search = this.params.search || '';
+
+    const movies = await getMovies(search);
     this.app.userData.movies = movies;
-    const context = Object.assign({ origin: encodeURIComponent('#/catalog') }, this.app.userData)
+    const context = Object.assign({ origin: encodeURIComponent('#/catalog'), search }, this.app.userData)
 
     this.partial('./templates/movie/catalog.hbs', context);
 }
@@ -52,7 +54,8 @@ export async function createPost() {
             tickets: Number(this.params.tickets)
         }
 
-        const result = createMovie(movie);
+        const result = await createMovie(movie);
+
         if (result.hasOwnProperty('errorData')) {
             const error = new Error();
             Object.assign(error, result);
@@ -61,7 +64,7 @@ export async function createPost() {
 
         showInfo('Movie created')
 
-        this.redirect('#/details/' + result.objectId)
+        // this.redirect('#/my_movies')
 
     } catch (err) {
         console.log(err);
@@ -170,6 +173,31 @@ export async function buyTicket() {
         showInfo(`Bought ticket for ${movie.title}`)
 
         this.redirect(this.params.origin);
+
+    } catch (err) {
+        console.log(err);
+        showError(err.message);
+    }
+}
+
+export async function deleteMovie() {
+
+    if (confirm('Are you sure you want to delete that movie?') == false) {
+        return this.redirect('#/my_movies');
+    }
+    const movieId = this.params.id;
+
+    try {
+        const result = await apiDelete(movieId)
+        if (result.hasOwnProperty('errorData')) {
+            const error = new Error();
+            Object.assign(error, result);
+            throw error
+        }
+
+        showInfo(`Movie Deleted`)
+
+        this.redirect('#/my_movies');
 
     } catch (err) {
         console.log(err);

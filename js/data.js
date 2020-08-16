@@ -74,16 +74,25 @@ export async function logout() {
 
 // get all Movies
 
-export async function getMovies() {
+export async function getMovies(search) {
     beginRequest();
 
     const token = localStorage.getItem('userToken');
 
-    const result = (await fetch(host(endpoints.MOVIES), {
-        headers: {
-            'user-token': token
-        }
-    })).json();
+    let result;
+    if (search == '') {
+        result = (await fetch(host(endpoints.MOVIES), {
+            headers: {
+                'user-token': token
+            }
+        })).json();
+    } else {
+        result = (await fetch(host(endpoints.MOVIES + `?where=${escape(`genres LIKE '%${search}%'`)}`), {
+            headers: {
+                'user-token': token
+            }
+        })).json();
+    }
 
     endRequest();
 
@@ -151,7 +160,7 @@ export async function updateMovie(id, updatedProp) {
 
 // delete movie
 
-async function deleteMovie(id) {
+export async function deleteMovie(id) {
     beginRequest();
 
     const token = localStorage.getItem('userToken');
