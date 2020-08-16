@@ -64,7 +64,7 @@ export async function createPost() {
 
         showInfo('Movie created')
 
-        // this.redirect('#/my_movies')
+        this.redirect('#/details/' + result.objectId, movie);
 
     } catch (err) {
         console.log(err);
@@ -83,12 +83,12 @@ export async function details() {
     let movie = this.app.userData.movies.find(m => movieId === m.objectId);
 
     if (movie === undefined) {
-        await getMovieById(movieId);
+        movie = await getMovieById(movieId);
     }
 
-    const context = Object.assign({ movie, origin: encodeURIComponent('#/details/' + movieId) }, this.app.userData)
+    const context = Object.assign({ movie, origin: encodeURIComponent('#/details/' + movieId) }, this.app.userData);
 
-    this.partial('./templates/movie/details.hbs', context)
+    this.partial('./templates/movie/details.hbs', context);
 }
 
 
@@ -159,7 +159,7 @@ export async function buyTicket() {
     let movie = this.app.userData.movies.find(m => movieId === m.objectId);
 
     if (movie === undefined) {
-        await getMovieById(movieId);
+        movie = await getMovieById(movieId);
     }
 
     try {

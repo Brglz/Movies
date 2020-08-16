@@ -120,8 +120,9 @@ export async function getMovieById(id) {
 // create movie
 
 export async function createMovie(movie) {
-    const token = localStorage.getItem('userToken');
     beginRequest();
+
+    const token = localStorage.getItem('userToken');
 
     const result = (await fetch(host(endpoints.MOVIES), {
         method: 'POST',
